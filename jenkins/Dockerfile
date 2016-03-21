@@ -5,7 +5,7 @@ COPY openshift-jenkins/jenkins/* /usr/local/bin/
 RUN chmod -R 777 /usr/local/bin/ && chown -R 1001:0 /usr/local/bin/
 RUN /usr/local/bin/plugins.sh /opt/openshift/configuration/plugins.txt
 #ENV HOME=/var/lib/jenkins 
-USER 1001
+USER jenkins
 
 #ADD config-cloud.xml credentials.xml /opt/openshift/
 
