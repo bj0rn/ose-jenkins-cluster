@@ -1,4 +1,4 @@
-FROM centos:latest
+FROM openshift/jenkins-16-centos7
 
 ENV JDK_VERSION=8u66 \
     JDK_BUILD_VERSION=b17 \
