@@ -1,5 +1,5 @@
 FROM openshift/jenkins-1-centos7
-USER root
+#USER root
 COPY plugins.txt /opt/openshift/configuration/plugins.txt
 RUN /usr/local/bin/plugins.sh /opt/openshift/configuration/plugins.txt
 
@@ -7,10 +7,10 @@ RUN /usr/local/bin/plugins.sh /opt/openshift/configuration/plugins.txt
 ADD config-cloud.xml credentials.xml /opt/openshift/
 
 # Install additional plugins and modify files
-RUN sed -i "s|<slaveAgentPort>.*</slaveAgentPort>|<slaveAgentPort>50000</slaveAgentPort>|" "/var/lib/jenkins/config.xml" && \
-		  sed -i "s|<numExecutors>.*</numExecutors>|<numExecutors>0</numExecutors>|" "/var/lib/jenkins/config.xml" && \
-		  sed -i "/<slaves\/>/r /opt/openshift/config-cloud.xml" "/var/lib/jenkins/config.xml" && \
-		  rm -rf /opt/openshift/config-cloud.xml /opt/openshift/credentials.xml
+#RUN sed -i "s|<slaveAgentPort>.*</slaveAgentPort>|<slaveAgentPort>50000</slaveAgentPort>|" "/var/lib/jenkins/config.xml" && \
+#		  sed -i "s|<numExecutors>.*</numExecutors>|<numExecutors>0</numExecutors>|" "/var/lib/jenkins/config.xml" && \
+#		  sed -i "/<slaves\/>/r /opt/openshift/config-cloud.xml" "/var/lib/jenkins/config.xml" && \
+#		  rm -rf /opt/openshift/config-cloud.xml /opt/openshift/credentials.xml
 		  
 
 # Add Openshift command line interface (OC)
