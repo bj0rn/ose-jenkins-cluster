@@ -1,5 +1,12 @@
 FROM registry.access.redhat.com/openshift3/jenkins-1-rhel7:1.609-15
 
+ENV JDK_VERSION=8u66 \
+    JDK_BUILD_VERSION=b17 \
+    JENKINS_SWARM_VERSION=2.0 \
+    HOME=/var/lib/jenkins \
+    LANG=en_US.utf8
+
+
 ADD config-cloud.xml credentials.xml /opt/openshift/
 
 # Install additional plugins and modify files
@@ -15,3 +22,9 @@ RUN mkdir -p /opt/openshift/plugins && \
 		  sed -i "/<slaves\/>/r /opt/openshift/config-cloud.xml" "/opt/openshift/configuration/config.xml" && \
 		  chmod -R og+rw /opt/openshift/plugins && \
 		  rm -rf /opt/openshift/config-cloud.xml /opt/openshift/credentials.xml
+
+
+
+RUN chmod -R 777 ${HOME} && chown -R 1001:0 ${HOME}
+
+USER 1001
