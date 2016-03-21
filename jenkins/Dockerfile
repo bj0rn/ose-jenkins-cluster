@@ -23,13 +23,6 @@ USER root
 
 RUN chmod -R 777 ${HOME} && chown -R 1001:0 ${HOME}
 
-RUN chmod -R 777 /usr/local/bin/ && chown -R 1001:0 /usr/local/bin/
-
-RUN chmod -R 777 /usr/local/bin/ && chown -R 1001:0 /usr/local/bin/
-
-RUN chmod -R 777 /opt/openshift && chown -R 1001:0 /opt/openshift
-
-
 # We base this Dockerfile on the openshift/jenkins with slight modifications and additions. We need to
 # install the tools that the openshift/jenkins does and has embedded. These files are copied from
 # https://github.com/openshift/jenkins
@@ -37,6 +30,11 @@ COPY openshift-jenkins/openshift /opt/openshift
 COPY openshift-jenkins/jenkins/* /usr/local/bin/
 COPY openshift-jenkins/s2i /usr/libexec/s2i
 RUN sed -i -- 's|cp -r /opt/openshift/configuration/\* \${JENKINS_HOME}|cp -rT /opt/openshift/configuration ${JENKINS_HOME}|g' /usr/libexec/s2i/run
+
+RUN chmod -R 777 /usr/local/bin/ && chown -R 1001:0 /usr/local/bin/
+
+RUN chmod -R 777 /opt/openshift && chown -R 1001:0 /opt/openshift
+
 
 RUN chown -R 1001:0 /opt/openshift && \
     /usr/local/bin/fix-permissions /opt/openshift && \
