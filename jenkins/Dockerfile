@@ -1,6 +1,8 @@
 FROM openshift/jenkins-1-centos7
 USER root
 COPY plugins.txt /opt/openshift/configuration/plugins.txt
+COPY config.xml /opt/openshift/configuration/config.xml
+
 RUN /usr/local/bin/plugins.sh /opt/openshift/configuration/plugins.txt
 
 RUN yum install -y git tar zip unzip which java-1.8.0-openjdk-devel
