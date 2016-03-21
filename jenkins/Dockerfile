@@ -1,39 +1,27 @@
-FROM centos:centos7
+FROM openshift/jenkins-16-centos7
 
-ENV HOME=/var/lib/jenkins \
-    JENKINS_HOME=/var/lib/jenkins
+ENV HOME=/var/lib/jenkins 
 
-# 8080 for main web interface, 50000 for slave agents
-EXPOSE 8080 50000
 
-RUN curl http://pkg.jenkins-ci.org/redhat/jenkins.repo -o /etc/yum.repos.d/jenkins.repo && \
-    rpm --import http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key && \
-    yum -y --setopt=tsflags=nodocs --disableplugin=fastestmirror install epel-release && \
-    sed -i -- 's/\#baseurl/baseurl/g' /etc/yum.repos.d/epel.repo && \
-    sed -i -- 's/mirrorlist/\#mirrorlist/g' /etc/yum.repos.d/epel.repo && \
-    yum -y --setopt=tsflags=nodocs --disableplugin=fastestmirror install gettext git tar zip unzip nss_wrapper && \
-    yum clean all  && \
-    localedef -f UTF-8 -i en_US en_US.UTF-8
+ADD config-cloud.xml credentials.xml /opt/openshift/
 
-# We need to do insecure https downloads from curl because of the way certificates are handled in the SITS networks.
-# We enable it globally here because the /usr/local/bin/plugins.sh that is invoked later (downloaded from
-# https://codeload.github.com/openshift/jenkins/zip/master also uses curl to download plugins).
-RUN mkdir -p $HOME && echo insecure > $HOME/.curlrc
+# Install additional plugins and modify files
+RUN mkdir -p /opt/openshift/plugins && \
+          cat /opt/openshift/credentials.xml > /opt/openshift/configuration/credentials.xml && \
+          curl -sSL -f https://updates.jenkins-ci.org/download/plugins/swarm/2.0/swarm.hpi -o /opt/openshift/plugins/swarm.jpi && \
+		  curl -sSL -f https://updates.jenkins-ci.org/download/plugins/durable-task/1.7/durable-task.hpi -o /opt/openshift/plugins/durable-task.jpi && \
+		  curl -sSL -f https://updates.jenkins-ci.org/download/plugins/credentials/1.24/credentials.hpi -o /opt/openshift/plugins/credentials.jpi && \
+		  curl -sSL -f https://updates.jenkins-ci.org/download/plugins/kubernetes/0.5/kubernetes.hpi -o /opt/openshift/plugins/kubernetes.jpi && \
+		  touch /opt/openshift/plugins/credentials.jpi.pinned && \
+		  sed -i "s|<slaveAgentPort>.*</slaveAgentPort>|<slaveAgentPort>50000</slaveAgentPort>|" "/opt/openshift/configuration/config.xml" && \
+		  sed -i "s|<numExecutors>.*</numExecutors>|<numExecutors>0</numExecutors>|" "/opt/openshift/configuration/config.xml" && \
+		  sed -i "/<slaves\/>/r /opt/openshift/config-cloud.xml" "/opt/openshift/configuration/config.xml" && \
+		  chmod -R og+rw /opt/openshift/plugins && \
+		  rm -rf /opt/openshift/config-cloud.xml /opt/openshift/credentials.xml
 
-# Install Java
-ENV JDK_VERSION=8u66 \
-    JDK_BUILD_VERSION=b17
-RUN curl -LO "http://download.oracle.com/otn-pub/java/jdk/$JDK_VERSION-$JDK_BUILD_VERSION/jdk-$JDK_VERSION-linux-x64.rpm" -H 'Cookie: oraclelicense=accept-securebackup-cookie' && \
-    rpm -i jdk-$JDK_VERSION-linux-x64.rpm && \
-    rm -f jdk-$JDK_VERSION-linux-x64.rpm
+USER root
 
-# Add Openshift command line interface (OC)
-RUN curl -L --insecure https://github.com/openshift/origin/releases/download/v1.1.3/openshift-origin-client-tools-v1.1.3-cffae05-linux-64bit.tar.gz | tar -zx && \
-    mv openshift-origin-client-tools*/oc /usr/local/bin && \
-    rm -rf openshift-origin-client-tools*
-
-# Install Jenkins
-RUN yum -y --setopt=tsflags=nodocs --disableplugin=fastestmirror install jenkins-1.652
+RUN chmod -R 777 ${HOME} && chown -R 1001:0 ${HOME}
 
 # We base this Dockerfile on the openshift/jenkins with slight modifications and additions. We need to
 # install the tools that the openshift/jenkins does and has embedded. These files are copied from
@@ -42,6 +30,11 @@ COPY openshift-jenkins/openshift /opt/openshift
 COPY openshift-jenkins/jenkins/* /usr/local/bin/
 COPY openshift-jenkins/s2i /usr/libexec/s2i
 RUN sed -i -- 's|cp -r /opt/openshift/configuration/\* \${JENKINS_HOME}|cp -rT /opt/openshift/configuration ${JENKINS_HOME}|g' /usr/libexec/s2i/run
+
+RUN chmod -R 777 /usr/local/bin/ && chown -R 1001:0 /usr/local/bin/
+
+RUN chmod -R 777 /opt/openshift && chown -R 1001:0 /opt/openshift
+
 
 RUN chown -R 1001:0 /opt/openshift && \
     /usr/local/bin/fix-permissions /opt/openshift && \
@@ -55,6 +48,5 @@ RUN /usr/local/bin/plugins.sh /opt/openshift/configuration/plugins.txt
 # older than the version we want to use).
 RUN touch /opt/openshift/plugins/credentials.jpi.pinned
 
-VOLUME ["/var/lib/jenkins"]
 
-CMD ["/usr/libexec/s2i/run"]
+USER 1001
