@@ -1,6 +1,7 @@
 FROM openshift/jenkins-16-centos7
-#COPY plugins.txt /opt/openshift/configuration/plugins.txt
-#RUN /usr/local/bin/plugins.sh /opt/openshift/configuration/plugins.txt
+COPY plugins.txt /opt/openshift/configuration/plugins.txt
+COPY openshift-jenkins/jenkins/* /usr/local/bin/
+RUN /usr/local/bin/plugins.sh /opt/openshift/configuration/plugins.txt
 #ENV HOME=/var/lib/jenkins 
 
 
