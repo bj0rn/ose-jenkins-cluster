@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/openshift3/jenkins-1-rhel7:1.609-15
+FROM centos:latest
 
 ENV JDK_VERSION=8u66 \
     JDK_BUILD_VERSION=b17 \
