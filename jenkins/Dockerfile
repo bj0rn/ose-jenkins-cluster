@@ -25,6 +25,8 @@ RUN chmod -R 777 ${HOME} && chown -R 1001:0 ${HOME}
 
 RUN chmod -R 777 /usr/local/bin/ && chown -R 1001:0 /usr/local/bin/
 
+RUN chmod -R 777 /usr/local/bin/ && chown -R 1001:0 /usr/local/bin/
+
 RUN chmod -R 777 /opt/openshift && chown -R 1001:0 /opt/openshift
 
 
