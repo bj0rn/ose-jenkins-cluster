@@ -23,4 +23,25 @@ USER root
 
 RUN chmod -R 777 ${HOME} && chown -R 1001:0 ${HOME}
 
+# We base this Dockerfile on the openshift/jenkins with slight modifications and additions. We need to
+# install the tools that the openshift/jenkins does and has embedded. These files are copied from
+# https://github.com/openshift/jenkins
+COPY openshift-jenkins/openshift /opt/openshift
+COPY openshift-jenkins/jenkins/* /usr/local/bin/
+COPY openshift-jenkins/s2i /usr/libexec/s2i
+RUN sed -i -- 's|cp -r /opt/openshift/configuration/\* \${JENKINS_HOME}|cp -rT /opt/openshift/configuration ${JENKINS_HOME}|g' /usr/libexec/s2i/run
+
+RUN chown -R 1001:0 /opt/openshift && \
+    /usr/local/bin/fix-permissions /opt/openshift && \
+    /usr/local/bin/fix-permissions /var/lib/jenkins
+
+# Add our own set of plugins
+COPY config /opt/openshift/configuration
+RUN /usr/local/bin/plugins.sh /opt/openshift/configuration/plugins.txt
+# We need to pin the version of the credentials plugin that we download from plugins.txt, or else it will be
+# overwritten by the credentials plugin version that is embedded in jenkins (which, at the time of this writing is
+# older than the version we want to use).
+RUN touch /opt/openshift/plugins/credentials.jpi.pinned
+
+
 USER 1001
