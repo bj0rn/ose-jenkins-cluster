@@ -20,5 +20,7 @@ RUN curl -L --insecure https://github.com/openshift/origin/releases/download/v1.
 
 RUN yum install -y git tar zip unzip which java-1.8.0-openjdk-devel
 
+RUN yum -y --disableplugin=fastestmirror groupinstall "Development Tools" && yum clean all
+
 
 
