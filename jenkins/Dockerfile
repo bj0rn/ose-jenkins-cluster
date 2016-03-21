@@ -1,4 +1,4 @@
-FROM openshift/jenkins-16-centos7
+FROM openshift/jenkins-1-centos7
 #USER root
 COPY plugins.txt /opt/openshift/configuration/plugins.txt
 #COPY openshift-jenkins/jenkins/* /usr/local/bin/
