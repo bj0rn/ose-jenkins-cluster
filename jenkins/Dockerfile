@@ -18,5 +18,7 @@ RUN curl -L --insecure https://github.com/openshift/origin/releases/download/v1.
     mv openshift-origin-server-v1.1.1-e1d9873-linux-64bit/oc /usr/local/bin && \
     rm -r openshift-origin-server-v1.1.1-e1d9873-linux-64bit
 
+RUN yum install -y git tar zip unzip which java-1.8.0-openjdk-devel
+
 
 
