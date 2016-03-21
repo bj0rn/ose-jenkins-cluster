@@ -27,6 +27,8 @@ WORKDIR /var/lib/jenkins
 
 VOLUME /var/lib/jenkins
 
+USER root
+
 RUN chmod -R 777 /var/lib/jenkins && chown -R 1001:0 /var/lib/jenkins
 
 USER 1001

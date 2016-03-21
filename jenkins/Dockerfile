@@ -23,7 +23,7 @@ RUN mkdir -p /opt/openshift/plugins && \
 		  chmod -R og+rw /opt/openshift/plugins && \
 		  rm -rf /opt/openshift/config-cloud.xml /opt/openshift/credentials.xml
 
-
+USER root
 
 RUN chmod -R 777 ${HOME} && chown -R 1001:0 ${HOME}
 
