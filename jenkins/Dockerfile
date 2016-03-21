@@ -25,6 +25,9 @@ RUN chmod -R 777 ${HOME} && chown -R 1001:0 ${HOME}
 
 RUN chmod -R 777 /usr/local/bin && chown -R 1001:0 /usr/local/bin
 
+RUN chmod -R 777 /opt/openshift && chown -R 1001:0 /opt/openshift
+
+
 # We base this Dockerfile on the openshift/jenkins with slight modifications and additions. We need to
 # install the tools that the openshift/jenkins does and has embedded. These files are copied from
 # https://github.com/openshift/jenkins
