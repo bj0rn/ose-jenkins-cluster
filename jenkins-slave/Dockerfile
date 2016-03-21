@@ -14,6 +14,9 @@ RUN yum install -y git tar zip unzip which java-1.8.0-openjdk-devel && \
       && mv /usr/share/apache-maven-$MAVEN_VERSION /usr/share/maven \
       && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
 
+RUN yum -y --disableplugin=fastestmirror groupinstall "Development Tools" && yum clean all
+
+
 # Copy script
 COPY jenkins-slave.sh /opt/jenkins-slave/bin/
 
@@ -22,6 +25,13 @@ RUN curl --create-dirs -sSLo /opt/jenkins-slave/bin/swarm-client-$JENKINS_SWARM_
   && curl --create-dirs -sSLo /opt/jenkins-slave/bin/slave.jar http://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/$JNLP_SLAVE_VERSION/remoting-$JNLP_SLAVE_VERSION.jar \
   && chmod -R 775 /opt/jenkins-slave /var/lib/jenkins && \
   chown -R jenkins-slave:root /opt/jenkins-slave /var/lib/jenkins
+
+
+# Add Openshift command line interface (OC)
+RUN curl -L --insecure https://github.com/openshift/origin/releases/download/v1.1.1/openshift-origin-server-v1.1.1-e1d9873-linux-64bit.tar.gz | tar -zx && \
+    mv openshift-origin-server-v1.1.1-e1d9873-linux-64bit/oc /usr/local/bin && \
+    rm -r openshift-origin-server-v1.1.1-e1d9873-linux-64bit
+
 
 WORKDIR /var/lib/jenkins
 

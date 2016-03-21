@@ -1,10 +1,6 @@
-FROM centos:latest
+FROM openshift/jenkins-16-centos7
 
-ENV JDK_VERSION=8u66 \
-    JDK_BUILD_VERSION=b17 \
-    JENKINS_SWARM_VERSION=2.0 \
-    HOME=/var/lib/jenkins \
-    LANG=en_US.utf8
+ENV HOME=/var/lib/jenkins 
 
 
 ADD config-cloud.xml credentials.xml /opt/openshift/
