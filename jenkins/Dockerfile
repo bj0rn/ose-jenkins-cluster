@@ -1,3 +1,5 @@
+
+
 FROM openshift/jenkins-16-centos7
 
 ENV JDK_VERSION=8u66 \
