@@ -141,20 +141,20 @@
           "dockerStrategy": {
             "forcePull": true
           }
-        }
-      },
-      "output": {
-        "to": {
-          "kind": "ImageStreamTag",
-          "name": "${APPLICATION_NAME}-slave:latest"
-        }
-      },
-      "triggers": [
-        {
-          "type": "ImageChange",
-          "imageChange": {}
-        }
-      ]
+        },
+        "output": {
+          "to": {
+            "kind": "ImageStreamTag",
+            "name": "${APPLICATION_NAME}-slave:latest"
+          }
+        },
+        "triggers": [
+          {
+            "type": "ImageChange",
+            "imageChange": {}
+          }
+        ]
+      }
     },
     {
       "kind": "Route",
