@@ -28,7 +28,7 @@ RUN curl --create-dirs -sSLo /opt/jenkins-slave/bin/swarm-client-$JENKINS_SWARM_
 
 
 # Add Openshift command line interface (OC)
-RUN curl -L --insecure https://github.com/openshift/origin/releases/download/v1.1.1/openshift-origin-server-v1.1.1-e1d9873-linux-64bit.tar.gz | tar -zx && \
+RUN curl -L --insecure https://github.com/openshift/origin/releases/download/v1.2.0/openshift-origin-client-tools-v1.2.0-2e62fab-linux-64bit.tar.gz | tar -zx && \
     mv openshift-origin-server-v1.1.1-e1d9873-linux-64bit/oc /usr/local/bin && \
     rm -r openshift-origin-server-v1.1.1-e1d9873-linux-64bit
 
