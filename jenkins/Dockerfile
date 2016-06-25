@@ -1,22 +1,22 @@
 FROM openshift/jenkins-1-centos7
+USER root
 COPY plugins.txt /opt/openshift/configuration/plugins.txt
+COPY config.xml /opt/openshift/configuration/config.xml
+
 RUN /usr/local/bin/plugins.sh /opt/openshift/configuration/plugins.txt
 
+RUN yum install -y git tar zip unzip which java-1.8.0-openjdk-devel
+
+RUN yum -y --disableplugin=fastestmirror groupinstall "Development Tools" && yum clean all
 
 ADD config-cloud.xml credentials.xml /opt/openshift/
 
-# Install additional plugins and modify files
-#RUN mkdir -p /opt/openshift/plugins && \
-#          cat /opt/openshift/credentials.xml > /opt/openshift/configuration/credentials.xml && \
-#          curl -sSL -f https://updates.jenkins-ci.org/download/plugins/swarm/2.0/swarm.hpi -o /opt/openshift/plugins/swarm.jpi && \
-#		  curl -sSL -f https://updates.jenkins-ci.org/download/plugins/durable-task/1.7/durable-task.hpi -o /opt/openshift/plugins/durable-task.jpi && \
-#		  curl -sSL -f https://updates.jenkins-ci.org/download/plugins/credentials/1.24/credentials.hpi -o /opt/openshift/plugins/credentials.jpi && \
-#		  curl -sSL -f https://updates.jenkins-ci.org/download/plugins/kubernetes/0.5/kubernetes.hpi -o /opt/openshift/plugins/kubernetes.jpi && \
-#		  touch /opt/openshift/plugins/credentials.jpi.pinned && \
-#		  sed -i "s|<slaveAgentPort>.*</slaveAgentPort>|<slaveAgentPort>50000</slaveAgentPort>|" "/opt/openshift/configuration/config.xml" && \
-#		  sed -i "s|<numExecutors>.*</numExecutors>|<numExecutors>0</numExecutors>|" "/opt/openshift/configuration/config.xml" && \
-#		  sed -i "/<slaves\/>/r /opt/openshift/config-cloud.xml" "/opt/openshift/configuration/config.xml" && \
-#		  chmod -R og+rw /opt/openshift/plugins && \
-#		  rm -rf /opt/openshift/config-cloud.xml /opt/openshift/credentials.xml
+# Add Openshift command line interface (OC)
+RUN curl -L --insecure https://github.com/openshift/origin/releases/download/v1.1.1/openshift-origin-server-v1.1.1-e1d9873-linux-64bit.tar.gz | tar -zx && \
+    mv openshift-origin-server-v1.1.1-e1d9873-linux-64bit/oc /usr/local/bin && \
+    rm -r openshift-origin-server-v1.1.1-e1d9873-linux-64bit
+
+
+
 
 
